@@ -139,26 +139,94 @@ var Game = /*#__PURE__*/function (_React$Component) {
 
     _this = _super.call(this, props);
     _this.state = {
-      board: new _minesweeper_js__WEBPACK_IMPORTED_MODULE_0__["Board"](10, 4)
+      board: new _minesweeper_js__WEBPACK_IMPORTED_MODULE_0__["Board"](10, 1),
+      level: 1
     };
-
-    var updateGame = _this.updateGame.bind(_assertThisInitialized(_this));
-
+    _this.updateGame = _this.updateGame.bind(_assertThisInitialized(_this));
+    _this.restartGameWon = _this.restartGameWon.bind(_assertThisInitialized(_this));
+    _this.restartGameLost = _this.restartGameLost.bind(_assertThisInitialized(_this));
     return _this;
   }
 
   _createClass(Game, [{
+    key: "restartGameLost",
+    value: function restartGameLost() {
+      var newLevel = 1;
+      this.setState({
+        board: new _minesweeper_js__WEBPACK_IMPORTED_MODULE_0__["Board"](10, newLevel),
+        level: newLevel
+      });
+    }
+  }, {
+    key: "restartGameWon",
+    value: function restartGameWon() {
+      var newLevel = this.state.level + 1;
+      this.setState({
+        board: new _minesweeper_js__WEBPACK_IMPORTED_MODULE_0__["Board"](10, newLevel),
+        level: newLevel
+      });
+    }
+  }, {
     key: "updateGame",
-    value: function updateGame() {//updates game board
+    value: function updateGame(tile, flagged) {
+      //updates game board
+      if (flagged) {
+        tile.toggleFlag();
+      } else {
+        tile.explore();
+      }
+
+      this.setState({
+        board: this.state.board
+      });
     }
   }, {
     key: "render",
     value: function render() {
       // debugger
-      return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("h1", null, "Board"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(_game_board_jsx__WEBPACK_IMPORTED_MODULE_2__["default"], {
-        board: this.state.board,
-        updateGame: this.updateGame
-      }));
+      var status = "playing";
+
+      if (this.state.board.lost()) {
+        status = "lost";
+      } else if (this.state.board.won()) {
+        status = "won";
+      }
+
+      if (status === "playing") {
+        return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_1___default.a.Fragment, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("h1", null, "Board Level: ", this.state.level), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(_game_board_jsx__WEBPACK_IMPORTED_MODULE_2__["default"], {
+          board: this.state.board,
+          updateGame: this.updateGame,
+          over: false
+        }));
+      } else if (status === "lost") {
+        return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_1___default.a.Fragment, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(_game_board_jsx__WEBPACK_IMPORTED_MODULE_2__["default"], {
+          board: this.state.board,
+          updateGame: this.updateGame,
+          over: true
+        }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", {
+          className: "modal"
+        }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", {
+          className: "modal-screen"
+        }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", {
+          className: "modal-form"
+        }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("h1", null, "You Lost at level ", this.state.level), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("button", {
+          onClick: this.restartGameLost
+        }, "Play Again"))));
+      } else {
+        return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_1___default.a.Fragment, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(_game_board_jsx__WEBPACK_IMPORTED_MODULE_2__["default"], {
+          board: this.state.board,
+          updateGame: this.updateGame,
+          over: true
+        }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", {
+          className: "modal"
+        }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", {
+          className: "modal-screen"
+        }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", {
+          className: "modal-form"
+        }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("h1", null, "YOU WIN"), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("button", {
+          onClick: this.restartGameWon
+        }, "Play Next Level: ", this.state.level + 1))));
+      }
     }
   }]);
 
@@ -183,6 +251,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var _game__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./game */ "./components/game.jsx");
+/* harmony import */ var _tile__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./tile */ "./components/tile.jsx");
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -209,6 +278,7 @@ function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.g
 
 
 
+
 var GameBoard = /*#__PURE__*/function (_React$Component) {
   _inherits(GameBoard, _React$Component);
 
@@ -223,7 +293,27 @@ var GameBoard = /*#__PURE__*/function (_React$Component) {
   _createClass(GameBoard, [{
     key: "render",
     value: function render() {
-      return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("h1", null, "Hello from Board"));
+      var _this = this;
+
+      var rows = this.props.board.grid.map(function (row, i) {
+        // create ul based on the row
+        var cols = row.map(function (el, j) {
+          return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("li", {
+            key: j
+          }, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(_tile__WEBPACK_IMPORTED_MODULE_3__["default"], {
+            tile: el,
+            updateGame: _this.props.updateGame,
+            over: _this.props.over
+          }));
+        }); // when we get here, cols has 10 react tiles with proper indexes 
+        // <GameBoard board={this.state.board} updateGame={this.updateGame} />
+
+        return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("ul", {
+          key: i
+        }, cols);
+      }); // I think we want rows to be 10x10 full of React Tile Component
+
+      return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_1___default.a.Fragment, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("h1", null, rows));
     }
   }]);
 
@@ -399,6 +489,142 @@ var Board = /*#__PURE__*/function () {
 
   return Board;
 }();
+
+/***/ }),
+
+/***/ "./components/tile.jsx":
+/*!*****************************!*\
+  !*** ./components/tile.jsx ***!
+  \*****************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Tile; });
+/* harmony import */ var _minesweeper_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./minesweeper.js */ "./components/minesweeper.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _game__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./game */ "./components/game.jsx");
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Date.prototype.toString.call(Reflect.construct(Date, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+
+
+
+
+var Tile = /*#__PURE__*/function (_React$Component) {
+  _inherits(Tile, _React$Component);
+
+  var _super = _createSuper(Tile);
+
+  function Tile(props) {
+    var _this;
+
+    _classCallCheck(this, Tile);
+
+    _this = _super.call(this, props);
+    _this.status = _this.status.bind(_assertThisInitialized(_this));
+    _this.printTile = _this.printTile.bind(_assertThisInitialized(_this));
+    _this.handleClick = _this.handleClick.bind(_assertThisInitialized(_this));
+    return _this;
+  } // export class Tile {
+  //     constructor(board, pos) {
+  //         this.board = board;
+  //         this.pos = pos;
+  //         this.bombed = false;
+  //         this.explored = false;
+  //         this.flagged = false;
+  //     }
+
+
+  _createClass(Tile, [{
+    key: "handleClick",
+    value: function handleClick(e) {
+      // e.preventDefault();
+      var currTile = this.props.tile;
+      var clicked = e.altKey; // debugger;
+
+      console.log(currTile);
+      console.log(e.altKey);
+      this.props.updateGame(currTile, clicked); // if (clicked) {
+      // }
+      // jsObject is the actual DIV that holds our tile
+    }
+  }, {
+    key: "printTile",
+    value: function printTile() {
+      if (this.props.tile.flagged) {
+        return "🏴"; // } else if (this.props.tile.bombed) {
+        //     return "💣";
+      } else if (this.props.tile.explored) {
+        if (this.props.tile.bombed) {
+          return "💣";
+        }
+
+        var nums = this.props.tile.adjacentBombCount();
+        return nums > 0 ? nums : " ";
+      } else {
+        return " ";
+      }
+    } //     //return what the visual represenation of the tile should be
+    // }
+
+  }, {
+    key: "status",
+    value: function status() {
+      if (this.props.tile.flagged) {
+        return "flagged"; // } else if (this.props.tile.bombed) {
+        //     return "bombed";
+      } else if (this.props.tile.explored) {
+        if (this.props.tile.bombed) {
+          return "bombed";
+        }
+
+        return "explored";
+      } else {
+        return "not";
+      }
+    }
+  }, {
+    key: "render",
+    value: function render() {
+      if (this.props.over) {
+        return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_1___default.a.Fragment, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", {
+          className: "tile ".concat(this.status())
+        }, " ", this.printTile(), " "));
+      } else {
+        return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_1___default.a.Fragment, null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", {
+          className: "tile ".concat(this.status()),
+          onClick: this.handleClick
+        }, " ", this.printTile(), " "));
+      }
+    }
+  }]);
+
+  return Tile;
+}(react__WEBPACK_IMPORTED_MODULE_1___default.a.Component);
+
+
 
 /***/ }),
 
